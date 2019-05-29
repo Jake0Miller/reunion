@@ -33,15 +33,7 @@ class Reunion
       owers = activity.owed
       activity.participants.each do |participant|
         amount = owers[participant[0]]
-        if amount > 0
-          payees = activity.participants.keys.find_all do |participant|
-            owers[participant] < 0
-          end
-        else
-          payees = activity.participants.keys.find_all do |participant|
-            owers[participant] > 0
-          end
-        end
+        payees = activity.participants.keys.find_all {|participant| amount * owers[participant] < 0}
         hash[participant[0]] ||= []
         hash[participant[0]] << {activity: activity.name,
                                  payees: payees,
