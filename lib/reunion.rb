@@ -27,4 +27,26 @@ class Reunion
       str << "#{ower[0]}: #{ower[1]}\n"
     end.chop
   end
+
+  def detailed_breakout
+    @activities.each_with_object({}) do |activity, hash|
+      owers = activity.owed
+      activity.participants.each do |participant|
+        amount = owers[participant[0]]
+        if amount > 0
+          payees = activity.participants.keys.find_all do |participant|
+            owers[participant] < 0
+          end
+        else
+          payees = activity.participants.keys.find_all do |participant|
+            owers[participant] > 0
+          end
+        end
+        hash[participant[0]] ||= []
+        hash[participant[0]] << {activity: activity.name,
+                                 payees: payees,
+                                 amount: amount/payees.length}
+      end
+    end
+  end
 end

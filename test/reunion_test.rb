@@ -14,6 +14,15 @@ class ReunionTest <Minitest::Test
     @drinks.add_participant("Maria", 60)
     @drinks.add_participant("Luther", 60)
     @drinks.add_participant("Louis", 0)
+    @bowling = Activity.new("Bowling")
+    @bowling.add_participant("Maria", 0)
+    @bowling.add_participant("Luther", 0)
+    @bowling.add_participant("Louis", 30)
+    @jet = Activity.new("Jet Skiing")
+    @jet.add_participant("Maria", 0)
+    @jet.add_participant("Luther", 0)
+    @jet.add_participant("Louis", 40)
+    @jet.add_participant("Nemo", 40)
   end
 
   def test_it_exists
@@ -57,5 +66,55 @@ class ReunionTest <Minitest::Test
 
     expected = "Maria: -10\nLuther: -30\nLouis: 40"
     assert_equal expected, @reunion.summary
+  end
+
+  def test_detailed_breakout
+    @reunion.add_activity(@brunch)
+    @reunion.add_activity(@drinks)
+    @reunion.add_activity(@bowling)
+    @reunion.add_activity(@jet)
+
+    expected = {"Maria" => [
+      {activity: "Brunch",
+      payees: ["Luther"],
+      amount: 10},
+      {activity: "Drinks",
+      payees: ["Louis"],
+      amount: -20},
+      {activity: "Bowling",
+      payees: ["Louis"],
+      amount: 10},
+      {activity: "Jet Skiing",
+      payees: ["Louis", "Nemo"],
+      amount: 10}],
+        "Luther" => [
+      {activity: "Brunch",
+      payees: ["Maria"],
+      amount: -10},
+      {activity: "Drinks",
+      payees: ["Louis"],
+      amount: -20},
+      {activity: "Bowling",
+      payees: ["Louis"],
+      amount: 10},
+      {activity: "Jet Skiing",
+      payees: ["Louis", "Nemo"],
+      amount: 10}],
+        "Louis" => [
+      {activity: "Drinks",
+      payees: ["Maria", "Luther"],
+      amount: 20},
+      {activity: "Bowling",
+      payees: ["Maria", "Luther"],
+      amount: -10},
+      {activity: "Jet Skiing",
+      payees: ["Maria", "Luther"],
+      amount: -10}],
+        "Nemo" => [
+      {activity: "Jet Skiing",
+      payees: ["Maria", "Luther"],
+      amount: -10}]}
+
+    assert_equal expected, @reunion.detailed_breakout
   end
 end
